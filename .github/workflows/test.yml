@@ -28,11 +28,6 @@ jobs:
       - name: Show Forge version
         run: |
           forge --version
-      
-      - name: Run Forge install
-        run: |
-          forge install
-        id: install
 
       - name: Run Forge fmt
         run: |
