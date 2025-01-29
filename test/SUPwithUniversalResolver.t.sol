@@ -5,7 +5,8 @@ import "forge-std/Test.sol";
 import "../src/SingleTimeUpgradableProxy.sol";
 
 import {UniversalResolver as UniversalResolverV1} from "@ens-contracts-main/contracts/utils/UniversalResolver.sol";
-import {UniversalResolver as UniversalResolverV2} from "@ens-contracts-urv3/contracts/universalResolver/UniversalResolver.sol";
+import {UniversalResolver as UniversalResolverV2} from
+    "@ens-contracts-urv3/contracts/universalResolver/UniversalResolver.sol";
 import {ENS} from "@ens-contracts-urv3/contracts/registry/ENS.sol";
 
 import {Create2} from "@openzeppelin/contracts-sup/utils/Create2.sol";
@@ -70,7 +71,7 @@ contract ProxyTest is Test {
 
         assertEq(proxy.implementation(), address(urV2));
         assertEq(proxy.admin(), address(0));
-        
+
         UniversalResolverV2 upgraded = UniversalResolverV2(address(proxy));
 
         string[] memory urls = new string[](1);
@@ -91,11 +92,7 @@ contract ProxyTest is Test {
     }
 
     function test_StoragePersistanceAfterUpgrade() public {
-        SingleTimeUpgradableProxy proxyTemp = new SingleTimeUpgradableProxy(
-            address(urV1),
-            ADMIN,
-            ""
-        );
+        SingleTimeUpgradableProxy proxyTemp = new SingleTimeUpgradableProxy(address(urV1), ADMIN, "");
 
         UniversalResolverV1 proxyV1 = UniversalResolverV1(address(proxyTemp));
         UniversalResolverV2 proxyV2 = UniversalResolverV2(address(proxyTemp));
