@@ -1,18 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-sup/proxy/utils/Initializable.sol";
 
-contract MockUniversalV1 is Initializable {
+contract MockUniversalV1 {
     uint256 public value;
     address public owner;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
-        _disableInitializers();
-    }
-
-    function initialize() public initializer {
         owner = msg.sender;
     }
 

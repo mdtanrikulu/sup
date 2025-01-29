@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-sup/proxy/ERC1967/ERC1967Proxy.sol";
+import "@openzeppelin/contracts-sup/proxy/ERC1967/ERC1967Utils.sol";
+import "@openzeppelin/contracts-sup/proxy/utils/Initializable.sol";
 
 contract SingleTimeUpgradableProxy is ERC1967Proxy {
     // Custom storage slot for admin (EIP-1967 compatible)
@@ -61,6 +61,9 @@ contract SingleTimeUpgradableProxy is ERC1967Proxy {
         address previousAdmin = _getAdmin();
         // Bypass ERC1967Utils checks by writing directly to storage
         StorageSlot.getAddressSlot(_ADMIN_SLOT).value = address(0);
+
+        // this can be emitted as well as part of EIP-1967 compatibility
+        // emit IERC1967.AdminChanged(previousAdmin, address(0));
         emit UpgradeRevoked(previousAdmin);
     }
 
