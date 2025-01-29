@@ -8,3 +8,6 @@ ens-contracts-main = { version = "v1.0.0", git = "https://github.com/ensdomains/
 ens-contracts-urv3 = { version = "v1.0.0", git = "https://github.com/ensdomains/ens-contracts.git", rev = "9a89be3d31ccb1f4d0e9c6c5a2e2ededf3aa990a" }
 "@openzeppelin/contracts" = { version = "v4.1.0", git = "https://github.com/OpenZeppelin/openzeppelin-contracts.git", rev = "23869e5b2a7c6b9c3e27dee4289615b8cf50e36b" }
 "@openzeppelin/contracts-sup" = { version = "v5.2.0", git = "https://github.com/OpenZeppelin/openzeppelin-contracts.git", rev = "840c974028316f3c8172c1b8e5ed67ad95e255ca" }
+
+[profile.soldeer]
+remappings_regenerate = false

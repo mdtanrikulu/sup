@@ -33,6 +33,11 @@ jobs:
         run: |
           forge soldeer install
 
+      - name: Backup remappings.txt if exists
+        run: |
+          rm -f remappings.txt || true
+          cp remappings-temp.txt remappings.txt || true
+
       - name: Run Forge fmt
         run: |
           forge fmt --check
