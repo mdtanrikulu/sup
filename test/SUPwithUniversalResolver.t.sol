@@ -27,11 +27,7 @@ contract ProxyTest is Test {
         urV1 = new UniversalResolverV1();
         urV2 = new UniversalResolverV2();
 
-        bytes memory initData = abi.encodeWithSelector(
-            UniversalResolverV1.initialize.selector, 
-            ens, 
-            urls
-        );
+        bytes memory initData = abi.encodeWithSelector(UniversalResolverV1.initialize.selector, ens, urls);
         vm.prank(ADMIN);
         proxy = new SingleTimeUpgradableProxy(ADMIN, address(urV1), initData);
     }
@@ -62,11 +58,7 @@ contract ProxyTest is Test {
     function test_SuccessfulUpgrade() public {
         string[] memory urls = new string[](1);
         urls[0] = "https://test1";
-        bytes memory initData = abi.encodeWithSelector(
-            UniversalResolverV1.initialize.selector, 
-            ens, 
-            urls
-        );
+        bytes memory initData = abi.encodeWithSelector(UniversalResolverV1.initialize.selector, ens, urls);
         vm.prank(ADMIN);
         proxy.upgradeToAndCall(address(urV2), initData);
 
@@ -95,11 +87,7 @@ contract ProxyTest is Test {
         string[] memory urls = new string[](1);
         urls[0] = "http://universal-offchain-resolver.local";
 
-        bytes memory initDataV1 = abi.encodeWithSelector(
-            UniversalResolverV1.initialize.selector, 
-            ens, 
-            urls
-        );
+        bytes memory initDataV1 = abi.encodeWithSelector(UniversalResolverV1.initialize.selector, ens, urls);
         vm.prank(ADMIN);
         SingleTimeUpgradableProxy proxyTemp = new SingleTimeUpgradableProxy(ADMIN, address(urV1), initDataV1);
 
@@ -110,11 +98,7 @@ contract ProxyTest is Test {
         vm.prank(ADMIN);
         proxyV1.setGatewayURLs(urls);
 
-        bytes memory initData = abi.encodeWithSelector(
-            UniversalResolverV1.initialize.selector, 
-            ens, 
-            urls
-        );
+        bytes memory initData = abi.encodeWithSelector(UniversalResolverV1.initialize.selector, ens, urls);
 
         vm.prank(ADMIN);
         proxyTemp.upgradeToAndCall(address(urV2), initData);
