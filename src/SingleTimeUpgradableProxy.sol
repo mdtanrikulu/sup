@@ -3,7 +3,6 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts-sup/proxy/ERC1967/ERC1967Proxy.sol";
 import "@openzeppelin/contracts-sup/proxy/ERC1967/ERC1967Utils.sol";
-import "@openzeppelin/contracts-sup/proxy/utils/Initializable.sol";
 
 contract SingleTimeUpgradableProxy is ERC1967Proxy {
     // Custom storage slot for admin (EIP-1967 compatible)
@@ -24,8 +23,8 @@ contract SingleTimeUpgradableProxy is ERC1967Proxy {
         _;
     }
 
-    constructor(address _logic, address _admin, bytes memory _data) ERC1967Proxy(_logic, _data) {
-        ERC1967Utils.changeAdmin(_admin);
+    constructor(address admin_, address logic_, bytes memory data_) ERC1967Proxy(logic_, data_) {
+        ERC1967Utils.changeAdmin(admin_);
     }
 
     function upgradeToAndCall(address newImplementation, bytes memory data) external payable onlyAdmin {

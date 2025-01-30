@@ -1,4 +1,5 @@
 @ens-contracts-main=dependencies/ens-contracts-main-v1.0.0
 @ens-contracts-urv3=dependencies/ens-contracts-urv3-v1.0.0
-@openzeppelin/contracts=dependencies/@openzeppelin/contracts-v4.1.0/contracts
+@openzeppelin/contracts=dependencies/@openzeppelin/contracts-v4.8.0/contracts
 @openzeppelin/contracts-sup=dependencies/@openzeppelin/contracts-sup-v5.2.0/contracts
+@openzeppelin/contracts-upgradeable=dependencies/@openzeppelin/contracts-upgradeable-v5.2.0/contracts

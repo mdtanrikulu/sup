@@ -21,7 +21,7 @@ contract ProxyTest is Test {
         v2 = new MockUniversalV2();
         v2Bad = new MockUniversalV2();
 
-        proxy = new SingleTimeUpgradableProxy(address(v1), ADMIN, "");
+        proxy = new SingleTimeUpgradableProxy(ADMIN, address(v1), "");
     }
 
     /////// Core Functionality Tests ///////
@@ -56,7 +56,7 @@ contract ProxyTest is Test {
     }
 
     function test_StoragePersistanceAfterUpgrade() public {
-        SingleTimeUpgradableProxy proxyTemp = new SingleTimeUpgradableProxy(address(v1), ADMIN, "");
+        SingleTimeUpgradableProxy proxyTemp = new SingleTimeUpgradableProxy(ADMIN, address(v1), "");
 
         MockUniversalV1 proxyV1 = MockUniversalV1(address(proxyTemp));
         MockUniversalV2 proxyV2 = MockUniversalV2(address(proxyTemp));

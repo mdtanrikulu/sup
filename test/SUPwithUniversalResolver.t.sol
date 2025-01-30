@@ -4,12 +4,10 @@ pragma solidity ^0.8.20;
 import "forge-std/Test.sol";
 import "../src/SingleTimeUpgradableProxy.sol";
 
-import {UniversalResolver as UniversalResolverV1} from "@ens-contracts-main/contracts/utils/UniversalResolver.sol";
-import {UniversalResolver as UniversalResolverV2} from
-    "@ens-contracts-urv3/contracts/universalResolver/UniversalResolver.sol";
-import {ENS} from "@ens-contracts-urv3/contracts/registry/ENS.sol";
+import {UniversalResolver as UniversalResolverV1} from "../src/mocks/UniversalResolverV1.sol";
+import {UniversalResolver as UniversalResolverV2} from "../src/mocks/UniversalResolverV2.sol";
 
-import {Create2} from "@openzeppelin/contracts-sup/utils/Create2.sol";
+import {ENS} from "@ens-contracts-urv3/contracts/registry/ENS.sol";
 
 contract ProxyTest is Test {
     address constant ADMIN = address(0x123);
@@ -26,22 +24,16 @@ contract ProxyTest is Test {
         string[] memory urls = new string[](1);
         urls[0] = "http://universal-offchain-resolver.local";
 
-        urV1 = UniversalResolverV1(0xce01f8eee7E479C928F8919abD53E553a36CeF67);
+        urV1 = new UniversalResolverV1();
+        urV2 = new UniversalResolverV2();
+
+        bytes memory initData = abi.encodeWithSelector(
+            UniversalResolverV1.initialize.selector, 
+            ens, 
+            urls
+        );
         vm.prank(ADMIN);
-        urV2 = new UniversalResolverV2(ens, urls);
-
-        // // Deploy through proxy to preserve msg.sender as ADMIN
-        // vm.startBroadcast(ADMIN);
-        // bytes memory constructorArgs = abi.encode(ens, urls);
-        // bytes memory bytecode = abi.encodePacked(
-        //     type(UniversalResolverV2).creationCode,
-        //     constructorArgs
-        // );
-        // bytes32 salt = bytes32(0);
-        // urV2 = UniversalResolverV2(Create2.deploy(0, salt, bytecode));
-        // vm.stopBroadcast();
-
-        proxy = new SingleTimeUpgradableProxy(address(urV1), ADMIN, "");
+        proxy = new SingleTimeUpgradableProxy(ADMIN, address(urV1), initData);
     }
 
     /////// Core Functionality Tests ///////
@@ -50,7 +42,9 @@ contract ProxyTest is Test {
         assertEq(proxy.implementation(), address(urV1));
 
         UniversalResolverV1 proxyV1 = UniversalResolverV1(address(proxy));
-        assertEq(proxyV1.owner(), address(0));
+        console.log("proxyV1.owner()");
+        console.logAddress(proxyV1.owner());
+        assertEq(proxyV1.owner(), ADMIN);
     }
 
     function test_ProxyFunctionality() public {
@@ -66,16 +60,22 @@ contract ProxyTest is Test {
 
     /////// Upgrade Tests ///////
     function test_SuccessfulUpgrade() public {
+        string[] memory urls = new string[](1);
+        urls[0] = "https://test1";
+        bytes memory initData = abi.encodeWithSelector(
+            UniversalResolverV1.initialize.selector, 
+            ens, 
+            urls
+        );
         vm.prank(ADMIN);
-        proxy.upgradeToAndCall(address(urV2), "");
+        proxy.upgradeToAndCall(address(urV2), initData);
 
         assertEq(proxy.implementation(), address(urV2));
         assertEq(proxy.admin(), address(0));
 
         UniversalResolverV2 upgraded = UniversalResolverV2(address(proxy));
 
-        string[] memory urls = new string[](1);
-        urls[0] = "https://test1";
+        urls[0] = "https://test2";
 
         console.log("urV2 - owner");
         console.logAddress(urV2.owner());
@@ -92,18 +92,32 @@ contract ProxyTest is Test {
     }
 
     function test_StoragePersistanceAfterUpgrade() public {
-        SingleTimeUpgradableProxy proxyTemp = new SingleTimeUpgradableProxy(address(urV1), ADMIN, "");
+        string[] memory urls = new string[](1);
+        urls[0] = "http://universal-offchain-resolver.local";
+
+        bytes memory initDataV1 = abi.encodeWithSelector(
+            UniversalResolverV1.initialize.selector, 
+            ens, 
+            urls
+        );
+        vm.prank(ADMIN);
+        SingleTimeUpgradableProxy proxyTemp = new SingleTimeUpgradableProxy(ADMIN, address(urV1), initDataV1);
 
         UniversalResolverV1 proxyV1 = UniversalResolverV1(address(proxyTemp));
         UniversalResolverV2 proxyV2 = UniversalResolverV2(address(proxyTemp));
 
-        string[] memory urls = new string[](1);
         urls[0] = "https://test1";
-        vm.prank(proxyV1.owner());
+        vm.prank(ADMIN);
         proxyV1.setGatewayURLs(urls);
 
+        bytes memory initData = abi.encodeWithSelector(
+            UniversalResolverV1.initialize.selector, 
+            ens, 
+            urls
+        );
+
         vm.prank(ADMIN);
-        proxyTemp.upgradeToAndCall(address(urV2), "");
+        proxyTemp.upgradeToAndCall(address(urV2), initData);
         assertEq(proxyV2._urls(0), urls[0]);
     }
 }

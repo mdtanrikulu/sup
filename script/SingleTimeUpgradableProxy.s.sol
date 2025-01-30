@@ -17,7 +17,7 @@ contract SingleTimeUpgradableProxyScript is Script {
         vm.startBroadcast();
 
         universalV1 = new MockUniversalV1();
-        sup = new SingleTimeUpgradableProxy(address(universalV1), ADMIN, "");
+        sup = new SingleTimeUpgradableProxy(ADMIN, address(universalV1), "");
 
         vm.stopBroadcast();
     }
