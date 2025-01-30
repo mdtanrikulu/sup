@@ -10,5 +10,6 @@ ens-contracts-urv3 = { version = "v1.0.0", git = "https://github.com/ensdomains/
 "@openzeppelin/contracts-sup" = { version = "v5.2.0", git = "https://github.com/OpenZeppelin/openzeppelin-contracts.git", rev = "840c974028316f3c8172c1b8e5ed67ad95e255ca" }
 "@openzeppelin/contracts-upgradeable" = { version = "v5.2.0", git = "https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable.git", rev = "7f47eb4df9cf70306cc167f4d655275d94dda7cc" }
 
-[profile.soldeer]
+[soldeer]
+remappings_generate = false
 remappings_regenerate = false
