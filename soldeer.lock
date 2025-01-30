@@ -1,30 +1,29 @@
-
-[[dependencies]]
-name = "ens-contracts-main"
-version = "v1.0.0"
-source = "https://github.com/ensdomains/ens-contracts.git"
-checksum = "87d8cc5778d483e2b4094868eec0c0cfc9e36a90"
-
-[[dependencies]]
-name = "ens-contracts-urv3"
-version = "v1.0.0"
-source = "https://github.com/ensdomains/ens-contracts.git"
-checksum = "9a89be3d31ccb1f4d0e9c6c5a2e2ededf3aa990a"
-
 [[dependencies]]
 name = "@openzeppelin/contracts"
 version = "v4.8.0"
-source = "https://github.com/OpenZeppelin/openzeppelin-contracts.git"
-checksum = "49c0e4370d0cc50ea6090709e3835a3091e33ee2"
+git = "https://github.com/OpenZeppelin/openzeppelin-contracts.git"
+rev = "49c0e4370d0cc50ea6090709e3835a3091e33ee2"
 
 [[dependencies]]
 name = "@openzeppelin/contracts-sup"
 version = "v5.2.0"
-source = "https://github.com/OpenZeppelin/openzeppelin-contracts.git"
-checksum = "840c974028316f3c8172c1b8e5ed67ad95e255ca"
+git = "https://github.com/OpenZeppelin/openzeppelin-contracts.git"
+rev = "840c974028316f3c8172c1b8e5ed67ad95e255ca"
 
 [[dependencies]]
 name = "@openzeppelin/contracts-upgradeable"
 version = "v5.2.0"
-source = "https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable.git"
-checksum = "7f47eb4df9cf70306cc167f4d655275d94dda7cc"
+git = "https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable.git"
+rev = "7f47eb4df9cf70306cc167f4d655275d94dda7cc"
+
+[[dependencies]]
+name = "ens-contracts-main"
+version = "v1.0.0"
+git = "https://github.com/ensdomains/ens-contracts.git"
+rev = "87d8cc5778d483e2b4094868eec0c0cfc9e36a90"
+
+[[dependencies]]
+name = "ens-contracts-urv3"
+version = "v1.0.0"
+git = "https://github.com/ensdomains/ens-contracts.git"
+rev = "9a89be3d31ccb1f4d0e9c6c5a2e2ededf3aa990a"
