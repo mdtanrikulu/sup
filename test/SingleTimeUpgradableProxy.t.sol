@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
+import "@openzeppelin/contracts-sup/interfaces/IERC1967.sol";
 import "../src/SingleTimeUpgradableProxy.sol";
 import "../src/mocks/MockUniversalV1.sol";
 import "../src/mocks/MockUniversalV2.sol";
@@ -94,6 +95,16 @@ contract ProxyTest is Test {
         vm.prank(ADMIN);
         vm.expectRevert(SingleTimeUpgradableProxy.InvalidImplementation.selector);
         proxy.upgradeToAndCall(STRANGER, "");
+    }
+
+    function test_UpgradeEmitsRevocationEvent() public {
+        vm.expectEmit(true, true, false, true);
+        emit IERC1967.Upgraded(address(v2));
+        vm.expectEmit(true, true, false, true);
+        emit SingleTimeUpgradableProxy.UpgradeRevoked(ADMIN);
+
+        vm.prank(ADMIN);
+        proxy.upgradeToAndCall(address(v2), "");
     }
 
     /////// Edge Cases ///////
