@@ -28,6 +28,10 @@ jobs:
       - name: Show Forge version
         run: |
           forge --version
+      
+      - name: Install dependencies
+        run: |
+          forge soldeer install
 
       - name: Run Forge fmt
         run: |
@@ -36,7 +40,7 @@ jobs:
 
       - name: Run Forge build
         run: |
-          forge build --sizes
+          forge build
         id: build
 
       - name: Run Forge tests

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
+import "@openzeppelin/contracts-sup/interfaces/IERC1967.sol";
 import "../src/SingleTimeUpgradableProxy.sol";
 import "../src/mocks/MockUniversalV1.sol";
 import "../src/mocks/MockUniversalV2.sol";
@@ -21,8 +22,7 @@ contract ProxyTest is Test {
         v2 = new MockUniversalV2();
         v2Bad = new MockUniversalV2();
 
-        bytes memory initData = abi.encodeCall(MockUniversalV1.initialize, ());
-        proxy = new SingleTimeUpgradableProxy(address(v1), ADMIN, initData);
+        proxy = new SingleTimeUpgradableProxy(ADMIN, address(v1), "");
     }
 
     /////// Core Functionality Tests ///////
@@ -31,7 +31,7 @@ contract ProxyTest is Test {
         assertEq(proxy.implementation(), address(v1));
 
         MockUniversalV1 proxyV1 = MockUniversalV1(address(proxy));
-        assertEq(proxyV1.owner(), address(this));
+        assertEq(proxyV1.owner(), address(0));
     }
 
     function test_ProxyFunctionality() public {
@@ -57,8 +57,7 @@ contract ProxyTest is Test {
     }
 
     function test_StoragePersistanceAfterUpgrade() public {
-        bytes memory initData = abi.encodeCall(MockUniversalV1.initialize, ());
-        SingleTimeUpgradableProxy proxyTemp = new SingleTimeUpgradableProxy(address(v1), ADMIN, initData);
+        SingleTimeUpgradableProxy proxyTemp = new SingleTimeUpgradableProxy(ADMIN, address(v1), "");
 
         MockUniversalV1 proxyV1 = MockUniversalV1(address(proxyTemp));
         MockUniversalV2 proxyV2 = MockUniversalV2(address(proxyTemp));
@@ -98,6 +97,16 @@ contract ProxyTest is Test {
         proxy.upgradeToAndCall(STRANGER, "");
     }
 
+    function test_UpgradeEmitsRevocationEvent() public {
+        vm.expectEmit(true, true, false, true);
+        emit IERC1967.Upgraded(address(v2));
+        vm.expectEmit(true, true, false, true);
+        emit SingleTimeUpgradableProxy.UpgradeRevoked(ADMIN);
+
+        vm.prank(ADMIN);
+        proxy.upgradeToAndCall(address(v2), "");
+    }
+
     /////// Edge Cases ///////
     function test_AdminRevocationAfterUpgrade() public {
         vm.prank(ADMIN);
@@ -106,10 +115,5 @@ contract ProxyTest is Test {
         bytes32 adminSlot = 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103;
         address currentAdmin = address(uint160(uint256(vm.load(address(proxy), adminSlot))));
         assertEq(currentAdmin, address(0));
-    }
-
-    function test_CannotInitializeImplementation() public {
-        vm.expectRevert(bytes4(keccak256("InvalidInitialization()")));
-        MockUniversalV1(address(v1)).initialize();
     }
 }

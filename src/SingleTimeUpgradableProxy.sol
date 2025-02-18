@@ -1,19 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-sup/proxy/ERC1967/ERC1967Proxy.sol";
+import "@openzeppelin/contracts-sup/proxy/ERC1967/ERC1967Utils.sol";
 
 contract SingleTimeUpgradableProxy is ERC1967Proxy {
     // Custom storage slot for admin (EIP-1967 compatible)
     // ref: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/0d0e4aabdbd6e5994d52048fe42832fc334c6d1f/contracts/proxy/ERC1967/ERC1967Utils.sol#L83C31-L83C41
     bytes32 private constant _ADMIN_SLOT = 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103;
-    bytes32 private constant _UPGRADED_SLOT = keccak256("SingleTimeUpgradableProxy.upgraded");
 
     // Custom errors
     error CallerNotAdmin();
-    error UpgradeAlreadyPerformed();
     error InvalidImplementation();
     error SameImplementation();
 
@@ -24,17 +21,12 @@ contract SingleTimeUpgradableProxy is ERC1967Proxy {
         _;
     }
 
-    constructor(address _logic, address _admin, bytes memory _data) ERC1967Proxy(_logic, _data) {
-        ERC1967Utils.changeAdmin(_admin);
+    constructor(address admin_, address logic_, bytes memory data_) ERC1967Proxy(logic_, data_) {
+        ERC1967Utils.changeAdmin(admin_);
     }
 
     function upgradeToAndCall(address newImplementation, bytes memory data) external payable onlyAdmin {
-        if (StorageSlot.getBooleanSlot(_UPGRADED_SLOT).value) {
-            revert UpgradeAlreadyPerformed();
-        }
-
         _validateImplementation(newImplementation);
-        StorageSlot.getBooleanSlot(_UPGRADED_SLOT).value = true;
 
         ERC1967Utils.upgradeToAndCall(newImplementation, data);
         _revokeAdmin();
@@ -61,6 +53,9 @@ contract SingleTimeUpgradableProxy is ERC1967Proxy {
         address previousAdmin = _getAdmin();
         // Bypass ERC1967Utils checks by writing directly to storage
         StorageSlot.getAddressSlot(_ADMIN_SLOT).value = address(0);
+
+        // this can be emitted as well as part of EIP-1967 compatibility
+        // emit IERC1967.AdminChanged(previousAdmin, address(0));
         emit UpgradeRevoked(previousAdmin);
     }
 
