@@ -88,9 +88,6 @@ contract ProxyTest is Test {
     }
 
     function test_SuccessfulUpgradeToV3() public {
-        string[] memory urls = new string[](1);
-        urls[0] = "https://test1";
-
         bytes memory initDataV3 = abi.encodeWithSelector(UniversalResolverV3.initialize.selector, ens);
         vm.prank(ADMIN);
         proxy.upgradeToAndCall(address(urV3), initDataV3);
