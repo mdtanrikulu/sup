@@ -14,7 +14,6 @@ import {DNSCoder} from "@unruggable-labs/contracts/DNSCoder.sol";
 contract UniversalResolver is CCIPReader, OwnableUpgradeable, IUniversalResolver {
     IReverseUR public rr;
     string[] public __urls; // keeping urls slot reserved for the removal
-    
 
     function initialize(IReverseUR _rr) public reinitializer(2) {
         __Ownable_init(msg.sender);
