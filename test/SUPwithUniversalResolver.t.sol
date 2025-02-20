@@ -6,6 +6,7 @@ import "../src/SingleTimeUpgradableProxy.sol";
 
 import {UniversalResolver as UniversalResolverV1} from "../src/mocks/UniversalResolverV1.sol";
 import {UniversalResolver as UniversalResolverV2} from "../src/mocks/UniversalResolverV2.sol";
+import {UniversalResolver as UniversalResolverV3} from "../src/mocks/UniversalResolverV3.sol";
 
 import {ENS} from "@ens-contracts-urv3/contracts/registry/ENS.sol";
 
@@ -17,6 +18,7 @@ contract ProxyTest is Test {
     SingleTimeUpgradableProxy proxy;
     UniversalResolverV1 urV1;
     UniversalResolverV2 urV2;
+    UniversalResolverV3 urV3;
 
     ENS ens = ENS(0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e);
 
@@ -26,6 +28,7 @@ contract ProxyTest is Test {
 
         urV1 = new UniversalResolverV1();
         urV2 = new UniversalResolverV2();
+        urV3 = new UniversalResolverV3();
 
         bytes memory initData = abi.encodeWithSelector(UniversalResolverV1.initialize.selector, ens, urls);
         vm.prank(ADMIN);
@@ -55,12 +58,13 @@ contract ProxyTest is Test {
     }
 
     /////// Upgrade Tests ///////
-    function test_SuccessfulUpgrade() public {
+    function test_SuccessfulUpgradeToV2() public {
         string[] memory urls = new string[](1);
         urls[0] = "https://test1";
-        bytes memory initData = abi.encodeWithSelector(UniversalResolverV1.initialize.selector, ens, urls);
+
+        bytes memory initDataV2 = abi.encodeWithSelector(UniversalResolverV2.initialize.selector, ens, urls);
         vm.prank(ADMIN);
-        proxy.upgradeToAndCall(address(urV2), initData);
+        proxy.upgradeToAndCall(address(urV2), initDataV2);
 
         assertEq(proxy.implementation(), address(urV2));
         assertEq(proxy.admin(), address(0));
@@ -81,6 +85,29 @@ contract ProxyTest is Test {
         vm.prank(ADMIN);
         upgraded.setUrls(urls);
         assertEq(upgraded._urls(0), urls[0]);
+    }
+
+    function test_SuccessfulUpgradeToV3() public {
+        bytes memory initDataV3 = abi.encodeWithSelector(UniversalResolverV3.initialize.selector, ens);
+        vm.prank(ADMIN);
+        proxy.upgradeToAndCall(address(urV3), initDataV3);
+
+        assertEq(proxy.implementation(), address(urV3));
+        assertEq(proxy.admin(), address(0));
+
+        UniversalResolverV3 upgraded = UniversalResolverV3(address(proxy));
+
+        console.log("urV3 - owner");
+        console.logAddress(urV3.owner());
+        console.log("urV3 - address");
+        console.logAddress(address(urV3));
+        console.log("implementation address");
+        console.logAddress(proxy.implementation());
+        console.log("upgraded - owner");
+        console.logAddress(upgraded.owner());
+
+        vm.prank(ADMIN);
+        assertEq(proxy.implementation(), address(urV3));
     }
 
     function test_StoragePersistanceAfterUpgrade() public {
