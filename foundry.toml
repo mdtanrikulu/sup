@@ -9,6 +9,8 @@ ens-contracts-urv3 = { version = "v1.0.0", git = "https://github.com/ensdomains/
 "@openzeppelin/contracts" = { version = "v4.8.0", git = "https://github.com/OpenZeppelin/openzeppelin-contracts.git", rev = "49c0e4370d0cc50ea6090709e3835a3091e33ee2" }
 "@openzeppelin/contracts-sup" = { version = "v5.2.0", git = "https://github.com/OpenZeppelin/openzeppelin-contracts.git", rev = "840c974028316f3c8172c1b8e5ed67ad95e255ca" }
 "@openzeppelin/contracts-upgradeable" = { version = "v5.2.0", git = "https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable.git", rev = "7f47eb4df9cf70306cc167f4d655275d94dda7cc" }
+"unruggable-labs/unruggable-resolve" = { version = "1.0.0", git = "https://github.com/unruggable-labs/unruggable-resolve.git", rev = "431e321cad7f2bd5644dd8cf816b1084e3e7cc2f" }
+"unruggable-labs/CCIPReader.sol" = { version = "1.0.0", git = "https://github.com/unruggable-labs/CCIPReader.sol.git", rev = "341576fe7ff2b6e0c93fc08f37740cf6439f5873" }
 
 [soldeer]
 remappings_generate = false
